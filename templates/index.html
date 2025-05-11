@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Employee Turnover Prediction</title>
+  <style>
+   body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+      background-color: #000;
+    }
+
+    /* Background effect */
+    .background {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(0, 255, 255, 0.2), transparent 70%),
+                  linear-gradient(45deg, rgba(0,255,255,0.1) 25%, transparent 25%),
+                  linear-gradient(-45deg, rgba(0,255,255,0.1) 25%, transparent 25%),
+                  linear-gradient(45deg, transparent 75%, rgba(0,255,255,0.1) 75%),
+                  linear-gradient(-45deg, transparent 75%, rgba(0,255,255,0.1) 75%);
+      background-size: 80px 80px;
+      z-index: -1;
+      animation: pulse 10s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        filter: brightness(1);
+      }
+      50% {
+        filter: brightness(1.4);
+      }
+    }
+
+    .form-card {
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 1px 90px rgba(0, 255, 255, 0.4);
+      max-width: 700px;
+      margin: 60px auto;
+      background-color: rgba(0, 0, 30, 0.85);
+      color: #00ffff;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(8px);
+    }
+
+    h2, h3 {
+      color: #00ffff;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #00ffff;
+      border-radius: 4px;
+      background-color: #001;
+      color: #00ffff;
+    }
+
+    input[type="submit"] {
+      background-color: #00ffff;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #0ff;
+    }
+
+    .error {
+      color: #ff4d4d;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    hr {
+      border: 1px solid #00ffff;
+      margin: 30px 0;
+    }
+.rotating-circle {
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle at 30% 30%, #a0e20688, #dd7c0d 70%);
+  border-radius: 50%;
+  box-shadow: inset -5px -5px 15px rgba(255, 255, 255, 0.3),
+              inset 5px 5px 15px rgba(0, 0, 0, 0.4),
+              0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 30px auto;
+  animation: spin 3s linear infinite;
+  position: relative;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  padding: 20px;
+}
+
+.rotating-circle span {
+  transform: rotate(-360deg); /* Cancel parent rotation for readable text */
+  animation: text-rotate 4s linear infinite;
+  display: block;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes text-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); } /* Counter rotation for upright text */
+}
+
+
+
+  </style>
+</head>
+<body class="light-mode">
+<div class="background"></div>
+
+
+  <button class="toggle-button" onclick="toggleMode()">🌙 Night Mode</button>
+<div class="rotating-circle">
+  <span>Employee Attrition Prediction</span>
+</div>
+  <h2>Employee Attrition Prediction</h2>
+
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+
+  <form method="POST" class="form-card">
+    <label for="Age">Age:</label>
+    <input type="number" name="Age" min="18" max="100" required>
+
+    <label for="Gender">Gender:</label>
+    <select name="Gender" required>
+      <option value="">Select Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+
+    <label for="Education_Level">Education Level:</label>
+    <select name="Education_Level" required>
+      <option value="">Select Education Level</option>
+      <option value="High School">High School</option>
+      <option value="Bachelor's">Bachelor's</option>
+      <option value="Master's">Master's</option>
+      <option value="PhD">PhD</option>
+    </select>
+
+    <label for="Years_of_Experience">Years of Experience:</label>
+    <input type="number" name="Years_of_Experience" min="0" max="50" required>
+
+    <label for="Compensation">Compensation:</label>
+    <input type="number" name="Compensation" min="1000" max="1000000" required>
+
+    <label for="Attendance">Attendance (%):</label>
+    <input type="number" name="Attendance" min="0" max="100" step="0.1" required>
+
+    <label for="Leadership_Style">Leadership Style:</label>
+    <select name="Leadership_Style" required>
+      <option value="">Select Leadership Style</option>
+      <option value="Supportive">Supportive</option>
+      <option value="Authoritarian">Authoritarian</option>
+      <option value="Democratic">Democratic</option>
+    </select>
+
+    <label for="Organizational_Support">Organizational Support:</label>
+    <select name="Organizational_Support" required>
+      <option value="">Select Organizational Support</option>
+      <option value="Low">Low</option>
+      <option value="Moderate">Moderate</option>
+      <option value="High">High</option>
+    </select>
+
+    <hr>
+    {% for trait, questions in trait_questions.items() %}
+      <h3>{{ trait }}</h3>
+      {% for q in questions %}
+        <label>{{ q }}</label>
+        <select name="{{ trait }}_{{ loop.index0 }}" required>
+          <option value="">Select a score</option>
+          {% for i in range(1, 6) %}
+            <option value="{{ i }}">{{ i }}</option>
+          {% endfor %}
+        </select>
+      {% endfor %}
+    {% endfor %}
+
+    <input type="submit" value="Predict">
+  </form>
+
+  <script>
+    function toggleMode() {
+      const body = document.body;
+      const button = document.querySelector('.toggle-button');
+
+      if (body.classList.contains('light-mode')) {
+        body.classList.replace('light-mode', 'dark-mode');
+        button.textContent = '☀️ Light Mode';
+      } else {
+        body.classList.replace('dark-mode', 'light-mode');
+        button.textContent = '🌙 Night Mode';
+      }
+    }
+  </script>
+
+</body>
+</html>
