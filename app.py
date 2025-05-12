@@ -3,7 +3,8 @@ import pandas as pd
 import joblib
 
 app = Flask(__name__)
-
+label_encoders = joblib.load('label_encoder.pkl')
+scaler = joblib.load('scaler.pkl')
 # Load model and dataset
 model = joblib.load('employee_turnover_model_shar.pkl')
 data = pd.read_csv('simulated_employee_turnover_.csv')
@@ -129,6 +130,7 @@ def index():
             input_data[trait] = round(sum(scores) / len(scores), 2)
 
         # Reorder the input data to match the model's expected input
+        
         correct_order = [
             'Age', 'Gender', 'Education_Level', 'Years_of_Experience', 'Workload',
             'Leadership_Style', 'Compensation', 'Organizational_Support',
@@ -137,7 +139,29 @@ def index():
             'Attendance'
         ]
         input_df = pd.DataFrame([input_data])[correct_order]
+        
+#         print(input_df)
+#         # for col in ['Gender', 'Education_Level', 'Leadership_Style', 'Organizational_Support']:
+#         #     le = label_encoders[col]
+#         #     input_df[col] = le.transform(input_df[col])
+#         numerical_columns = ['Age', 'Years_of_Experience', 'Workload', 'Compensation', 'Conscientiousness',
+#                      'Emotional_Resilience', 'Stress_Levels', 'Emotion_Focused_Coping', 
+#                      'Job_Satisfaction', 'Productivity', 'Attendance']
+#         input_df[numerical_columns] = scaler.transform(input_df[numerical_columns])
+#         dataa = [[1.416592307, 1, 3, 0.991195876, 0.947337818, 0, 0.555377025, 0,
+#          -0.548615672, -0.173192504, -0.160113009, -0.20622322,
+#          -0.68682965, 0.252164643, -0.21336377]]
 
+# # Column names
+#         columns = ['Age', 'Gender', 'Education_Level', 'Years_of_Experience', 'Workload',
+#            'Leadership_Style', 'Compensation', 'Organizational_Support',
+#            'Conscientiousness', 'Emotional_Resilience', 'Stress_Levels',
+#            'Emotion_Focused_Coping', 'Job_Satisfaction', 'Productivity',
+#            'Attendance']
+
+# # Create the DataFrame
+#         input_df = pd.DataFrame(dataa, columns=columns)
+#         print(input_df)
         # Model prediction
         prediction = model.predict(input_df)[0]
         label = "Attrition" if prediction == 1 else "No Attrition"
