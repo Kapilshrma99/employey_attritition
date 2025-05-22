@@ -3,6 +3,10 @@ import pandas as pd
 import joblib
 import secrets
 from flask_sqlalchemy import SQLAlchemy
+import os
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from flask import flash
 app = Flask(__name__)
 # Configure SQLite database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -12,19 +16,22 @@ db = SQLAlchemy(app)
 class Applicant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    # phone = db.Column(db.String(15), nullable=False)
     email = db.Column(db.String(120),unique=True, nullable=False)
     organisation= db.Column(db.String(120), nullable=False)
-    # inpu = db.Column(db.Text, nullable=True)
+if os.path.exists('database.db'):
+    os.remove('database.db')  # Remove old database
 
-# Create the tables before the first request
-# @app.before_first_request
-# print("sharma")
-# with app.app_context():
-#     print("kapil")
-#     db.create_all()
-# with app.app_context():
-#     db.create_all()    
+with app.app_context():
+    db.create_all()
+    print("✅ Database and tables created.")
+    # Initialize Flask-Admin
+# @app.route('/admin')
+# def admin():
+admin = Admin(app, name='Admin Panel', template_mode='bootstrap3')
+    # Add your model to admin
+admin.add_view(ModelView(Applicant, db.session))
+
+
 label_encoders = joblib.load('label_encoder.pkl')
 scaler = joblib.load('scaler.pkl')
 # Load model and dataset
@@ -233,25 +240,7 @@ def index():
         return render_template('result.html', prediction=label)
 
     return render_template('index.html', trait_questions=trait_questions, data=data,user=user)
-import os
-from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
-from flask import flash
+
 
 if __name__ == '__main__':
-    if os.path.exists('database.db'):
-        os.remove('database.db')  # Remove old database
-
-    with app.app_context():
-        db.create_all()
-        print("✅ Database and tables created.")
-    # Initialize Flask-Admin
-    admin = Admin(app, name='Admin Panel', template_mode='bootstrap3')
-# Add your model to admin
-    admin.add_view(ModelView(Applicant, db.session))
-        # Insert one record to test
-        # new_applicant = Applicant(name="Kapil Sharma", email="kapil@gmail.com", organisation="Krishna Engineering College")
-        # db.session.add(new_applicant)
-        # db.session.commit()
-        # print("✅ Sample applicant inserted.")
     app.run(debug=True)
