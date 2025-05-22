@@ -1,9 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Prediction Result</title>
+    <title>Access Page</title>
     <style>
-    body {
+        button {
+      background-color: #00ffff;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #0ff;
+    }
+
+   body {
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
@@ -48,7 +60,7 @@
       backdrop-filter: blur(8px);
     }
 
-    h2, h3,p {
+    h2, h3 {
       color: #00ffff;
       text-align: center;
     }
@@ -134,12 +146,24 @@
 </head>
 <body>
     <div class="background"></div>
-
-    <h2>Employee Turnover Prediction Result</h2>
     <div class="rotating-circle">
   <span>Employee Attrition Prediction</span>
 </div>
-    <p><strong>Prediction:</strong> {{ prediction }}</p>
-    <a href="/">Go Back</a>
+  <h2>Employee Attrition Prediction</h2>
+    <h2>Please Enter Your Details to Access the Site</h2>
+    {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
+
+    <form method="POST" class="form-card">
+        <label>Organization:</label><br>
+        <input type="text" name="organization" required><br><br>
+
+        <label>Name:</label><br>
+        <input type="text" name="name" required><br><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
 </body>
 </html>
